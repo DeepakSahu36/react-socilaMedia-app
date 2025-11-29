@@ -1,4 +1,4 @@
-function Sidebar() {
+function Sidebar({handleTab,activeFlag}) {
   return (
     <div className="d-flex flex-column flex-shrink-0 p-3 text-bg-dark sidebar">
       <a
@@ -13,9 +13,9 @@ function Sidebar() {
 
       <hr />
 
-      <ul className="nav nav-pills flex-column mb-auto">
-        <li className="nav-item">
-          <a href="#" className="nav-link active" aria-current="page">
+      <ul className="nav nav-pills flex-column mb-auto" >
+        <li className="nav-item" >
+          <a href="#" className={`nav-link text-white ${(activeFlag === "Home") && "active"}`} aria-current="page" onClick={()=>handleTab("Home")}>
             <svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true">
               <use xlinkHref="#home" />
             </svg>
@@ -23,8 +23,8 @@ function Sidebar() {
           </a>
         </li>
 
-        <li>
-          <a href="#" className="nav-link text-white">
+        <li >
+          <a href="#" className={`nav-link text-white ${(activeFlag === "Create Post") && "active"}`} onClick={()=>handleTab("Create Post")}>
             <svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true">
               <use xlinkHref="#speedometer2" />
             </svg>
