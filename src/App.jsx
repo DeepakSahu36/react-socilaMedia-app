@@ -9,15 +9,9 @@ import { useState } from "react";
 
  function App(){
   const [selectTab,setSelectTab] = useState("Home")
-  const [activeTab,setActiveTab] = useState("Home")
-  const handleSelectTab = function(tabName){
-    setSelectTab((currTab)=> currTab = tabName)
-    setActiveTab(currActive => currActive = tabName)
-  }
-
   return (
     <div className="app-container">
-      <Sidebar handleTab={handleSelectTab} activeFlag={activeTab} ></Sidebar>
+      <Sidebar activeTab={selectTab} setSelectTab={setSelectTab} ></Sidebar>
         <div className="content">
            <Header></Header>
              {selectTab === "Home" ? <PostList></PostList>: <CreatePost></CreatePost>}
