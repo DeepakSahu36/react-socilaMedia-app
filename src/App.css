@@ -1,37 +1,45 @@
-.app-container{
+.app-container {
   display: flex;
 }
 
-.content{
+.content {
   width: 100%;
 }
 
-.sidebar{
+.sidebar {
   min-height: 100vh;
   min-width: 280px;
 }
 
-.myCard{
- width: 30rem;
+.myCard {
+  width: 30rem;
   margin: 20px 50px;
 }
 
-.my-badge{
+.my-badge {
   margin-right: 10px;
 }
 
-.reactions{
+.reactions {
   margin: 15px 0px 0px 0px;
 }
 
-.create-post{
+.create-post {
   width: 60%;
   margin: 2% 10% 0% 10%;
-  
 }
 
-.post-btn{
-
+.post-btn {
   width: 100%;
-   
+}
+
+.welcome-msg{
+  margin-block: 17%;
+}
+
+
+.spinner{
+  margin-top: 20%;
+  height: 100px;
+  width: 100px;
 }
