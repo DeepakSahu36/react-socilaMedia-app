@@ -12,5 +12,26 @@
 }
 
 .myCard{
-  width: 18rem;
+ width: 30rem;
+  margin: 20px 50px;
+}
+
+.my-badge{
+  margin-right: 10px;
+}
+
+.reactions{
+  margin: 15px 0px 0px 0px;
+}
+
+.create-post{
+  width: 60%;
+  margin: 2% 10% 0% 10%;
+  
+}
+
+.post-btn{
+
+  width: 100%;
+   
 }
