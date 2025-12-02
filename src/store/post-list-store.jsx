@@ -1,10 +1,11 @@
-import { createContext, useCallback, useReducer } from "react";
+import { createContext, useEffect,useCallback, useReducer, useState } from "react";
 
 export const PostListContext = createContext({
   postList: [],
   addPost: () => {},
   deletePost: () => {},
-  addInitialPosts: () => {},
+  fetching :false,
+  isOffline :false
 });
 
 function postListReducer(currPostList, action) {
@@ -24,17 +25,51 @@ function postListReducer(currPostList, action) {
 function PostListProvider({ children }) {
   const [postList, dispatchPostList] = useReducer(postListReducer, []);
 
-  const addPost = function (userId, posttitle, postBody, reactions, tags) {
+  const [fetching, setFetching] = useState(false);
+    const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  
+    useEffect(() => {
+      // Listen to online / offline events
+      const goOnline = () => setIsOffline(false);
+      const goOffline = () => setIsOffline(true);
+  
+      window.addEventListener("online", goOnline);
+      window.addEventListener("offline", goOffline);
+  
+      return () => {
+        window.removeEventListener("online", goOnline);
+        window.removeEventListener("offline", goOffline);
+      };
+    }, []);
+  
+    useEffect(() => {
+      if (isOffline) return; // offline me fetch mat karo
+  
+      setFetching(true);
+  
+      const controller = new AbortController();
+  
+      fetch("https://dummyjson.com/posts", { signal: controller.signal })
+        .then((res) => res.json())
+        .then((data) => {
+          addInitialPosts(data.posts);
+          setFetching(false);
+        })
+        .catch((err) => {
+          if (err.name !== "AbortError") {
+            setFetching(false);
+            setIsOffline(true); // fetch fail hua → offline message dikhaa do
+          }
+        });
+  
+      return () => controller.abort();
+    }, [isOffline]);
+    
+
+  const addPost = function (newPost) {
     dispatchPostList({
       type: "ADD_POST",
-      payload: {
-        id: Date.now(),
-        title: posttitle,
-        body: postBody,
-        reactions: reactions,
-        userId: userId,
-        tags: tags,
-      },
+      payload: newPost,
     });
   };
 
@@ -61,7 +96,7 @@ function PostListProvider({ children }) {
 
   return (
     <PostListContext.Provider
-      value={{ postList, addPost, deletePost, addInitialPosts }}
+      value={{ postList, addPost, deletePost,fetching,isOffline }}
     >
       {children}
     </PostListContext.Provider>

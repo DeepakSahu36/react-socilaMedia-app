@@ -2,7 +2,7 @@ import { useContext, useRef } from "react";
 import { PostListContext } from "../store/post-list-store";
 
 function CreatePost() {
-   const {addPost}  = useContext(PostListContext) 
+  const { addPost } = useContext(PostListContext);
 
   const userIdElement = useRef("");
   const postTitleElement = useRef("");
@@ -10,20 +10,42 @@ function CreatePost() {
   const reactionsElement = useRef("");
   const tagsElement = useRef("");
 
-  function handleAddClick(event){
-    event.preventDefault()
-    const userId = userIdElement.current.value
-    const posttitle = postTitleElement.current.value
-    const postBody = postBodyElement.current.value
-    const reactions = reactionsElement.current.value
-    const tags = (tagsElement.current.value).split(' ')
-    addPost(userId,posttitle,postBody,reactions,tags)
-    userIdElement.current.value = ''
-     postTitleElement.current.value =''
-     postBodyElement.current.value = ''
-     tagsElement.current.value = ''
-     reactionsElement.current.value = ''
+  function handleAddClick(event) {
+    event.preventDefault();
+    
+    const userId = userIdElement.current.value;
+    const posttitle = postTitleElement.current.value;
+    const postBody = postBodyElement.current.value;
+    const reactions = reactionsElement.current.value;
+    const tags = tagsElement.current.value.split(" ");
+  
+    fetch("https://dummyjson.com/posts/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: posttitle,
+        body: postBody,
+        reactions: {
+          likes: reactions,
+        },
+        userId: userId,
+        tags: tags,
+      }),
+    })
+      .then((res) => res.json())
+      .then((resObj)=> addPost(resObj))
+      .catch(error =>{
+        console.log(error)
+      })
+         
+    
+    userIdElement.current.value = "";
+    postTitleElement.current.value = "";
+    postBodyElement.current.value = "";
+    tagsElement.current.value = "";
+    reactionsElement.current.value = "";
 
+    
   }
   return (
     <form className="create-post">
@@ -91,7 +113,11 @@ function CreatePost() {
         />
       </div>
 
-      <button type="submit" className="btn btn-primary post-btn" onClick={handleAddClick}>
+      <button
+        type="submit"
+        className="btn btn-primary post-btn"
+        onClick={handleAddClick}
+      >
         Post
       </button>
     </form>

@@ -20,7 +20,7 @@ function Card({ postDetails }) {
           </span>
         ))}
         <div className="alert alert-success reactions" role="alert">
-          This post has been reacted by {typeof(postDetails.reactions) === "number" ? postDetails.reactions: postDetails.reactions.likes } people
+          This post has been reacted by { postDetails.reactions.likes } people
         </div>
       </div>
     </div>
