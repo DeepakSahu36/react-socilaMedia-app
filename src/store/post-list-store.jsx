@@ -1,10 +1,10 @@
-import { createContext, useReducer } from "react";
+import { createContext, useCallback, useReducer } from "react";
 
 export const PostListContext = createContext({
   postList: [],
   addPost: () => {},
   deletePost: () => {},
-  addInitialPosts :()=>{}
+  addInitialPosts: () => {},
 });
 
 function postListReducer(currPostList, action) {
@@ -15,17 +15,17 @@ function postListReducer(currPostList, action) {
     );
   } else if (action.type === "ADD_POST") {
     newPostList = [action.payload, ...currPostList];
-  }else if(action.type === "ADD_INITIAL_POST"){
-      newPostList = action.payload.posts
+  } else if (action.type === "ADD_INITIAL_POST") {
+    newPostList = action.payload.posts;
   }
   return newPostList;
 }
 
 function PostListProvider({ children }) {
-  const [postList, dispatchPostList] = useReducer(postListReducer,[]);
+  const [postList, dispatchPostList] = useReducer(postListReducer, []);
 
   const addPost = function (userId, posttitle, postBody, reactions, tags) {
-    const addAction = {
+    dispatchPostList({
       type: "ADD_POST",
       payload: {
         id: Date.now(),
@@ -35,55 +35,37 @@ function PostListProvider({ children }) {
         userId: userId,
         tags: tags,
       },
-    };
-
-    dispatchPostList(addAction);
+    });
   };
 
-   const addInitialPosts = function (initialPosts) {
-   dispatchPostList({
+  const addInitialPosts = function (initialPosts) {
+    dispatchPostList({
       type: "ADD_INITIAL_POST",
       payload: {
-      posts : initialPosts
+        posts: initialPosts,
       },
-    }
-);
+    });
   };
 
-  const deletePost = function (postId) {
-    let deleteAction = {
-      type: "DELETE_POST",
-      payload: {
-        postId: postId,
-      },
-    };
-    dispatchPostList(deleteAction);
-  };
+  const deletePost = useCallback(
+    function (postId) {
+      dispatchPostList({
+        type: "DELETE_POST",
+        payload: {
+          postId: postId,
+        },
+      });
+    },
+    [dispatchPostList]
+  );
 
   return (
-    <PostListContext.Provider value={{ postList, addPost, deletePost,addInitialPosts }}>
+    <PostListContext.Provider
+      value={{ postList, addPost, deletePost, addInitialPosts }}
+    >
       {children}
     </PostListContext.Provider>
   );
 }
-
-const defaultPostList = [
-  {
-    id: "1",
-    title: "Going to Mumbai",
-    body: "Hi friends, I am going to Mumbai fro my vacations. Hope to enjoy a lot, Peace out",
-    reactions: 7,
-    userId: "user-1",
-    tags: ["vacation", "Mumbai", "Enjoying"],
-  },
-  {
-    id: "2",
-    title: "Finall pass ho gayaa",
-    body: "4 saal ki masti ke baad bhi ho gaye hain pass, Hard to believe",
-    reactions: 10,
-    userId: "user-2",
-    tags: ["pass", "Graduate", "Unbeliveable"],
-  },
-];
 
 export default PostListProvider;
