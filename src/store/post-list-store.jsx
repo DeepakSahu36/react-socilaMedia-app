@@ -1,106 +1,94 @@
-import { createContext, useEffect,useCallback, useReducer, useState } from "react";
+import { createContext, useReducer } from "react";
 
-export const PostListContext = createContext({
+export const ProvidesContext = createContext({
   postList: [],
-  addPost: () => {},
   deletePost: () => {},
-  fetching :false,
-  isOffline :false
+  addPost: () => {},
+  setInitialPosts: () => {},
 });
 
-function postListReducer(currPostList, action) {
+function reducerFunction(currPostList, actionObject) {
   let newPostList = currPostList;
-  if (action.type === "DELETE_POST") {
+  if (actionObject.type === "INITIAL_POSTS") {
+    newPostList = actionObject.payload.posts;
+  } else if (actionObject.type === "ADD_POST") {
+    newPostList = [actionObject.payload.newPost, ...currPostList];
+  } else if (actionObject.type === "DELETE_POST") {
     newPostList = currPostList.filter(
-      (post) => post.id !== action.payload.postId
+      (post) => post.id !== actionObject.payload.postId
     );
-  } else if (action.type === "ADD_POST") {
-    newPostList = [action.payload, ...currPostList];
-  } else if (action.type === "ADD_INITIAL_POST") {
-    newPostList = action.payload.posts;
   }
+
   return newPostList;
 }
 
-function PostListProvider({ children }) {
-  const [postList, dispatchPostList] = useReducer(postListReducer, []);
+function ContextProviderWrapper({ children }) {
+  const [postList, dispatchPostList] = useReducer(reducerFunction, []);
 
-  const [fetching, setFetching] = useState(false);
-    const [isOffline, setIsOffline] = useState(!navigator.onLine);
-  
-    useEffect(() => {
-      // Listen to online / offline events
-      const goOnline = () => setIsOffline(false);
-      const goOffline = () => setIsOffline(true);
-  
-      window.addEventListener("online", goOnline);
-      window.addEventListener("offline", goOffline);
-  
-      return () => {
-        window.removeEventListener("online", goOnline);
-        window.removeEventListener("offline", goOffline);
-      };
-    }, []);
-  
-    useEffect(() => {
-      if (isOffline) return; // offline me fetch mat karo
-  
-      setFetching(true);
-  
-      const controller = new AbortController();
-  
-      fetch("https://dummyjson.com/posts", { signal: controller.signal })
-        .then((res) => res.json())
-        .then((data) => {
-          addInitialPosts(data.posts);
-          setFetching(false);
-        })
-        .catch((err) => {
-          if (err.name !== "AbortError") {
-            setFetching(false);
-            setIsOffline(true); // fetch fail hua → offline message dikhaa do
-          }
-        });
-  
-      return () => controller.abort();
-    }, [isOffline]);
-    
-
-  const addPost = function (newPost) {
+  const addPost = function (addNew) {
+    addNew.id = Math.floor(Math.random() * 100 + 1);
     dispatchPostList({
       type: "ADD_POST",
-      payload: newPost,
-    });
-  };
-
-  const addInitialPosts = function (initialPosts) {
-    dispatchPostList({
-      type: "ADD_INITIAL_POST",
       payload: {
-        posts: initialPosts,
+        newPost: addNew,
       },
     });
   };
 
-  const deletePost = useCallback(
-    function (postId) {
-      dispatchPostList({
-        type: "DELETE_POST",
-        payload: {
-          postId: postId,
-        },
-      });
-    },
-    [dispatchPostList]
-  );
+  const setInitialPosts = function (initialPostList) {
+    dispatchPostList({
+      type: "INITIAL_POSTS",
+      payload: {
+        posts: initialPostList,
+      },
+    });
+  };
+
+  const deletePost = function (postId) {
+    dispatchPostList({
+      type: "DELETE_POST",
+      payload: {
+        postId: postId,
+      },
+    });
+  };
 
   return (
-    <PostListContext.Provider
-      value={{ postList, addPost, deletePost,fetching,isOffline }}
+    <ProvidesContext.Provider
+      value={{
+        postList,
+        deletePost,
+        addPost,
+        setInitialPosts,
+      }}
     >
       {children}
-    </PostListContext.Provider>
+    </ProvidesContext.Provider>
   );
 }
+/*
+const defaultPostList = [
+  {
+    id: "1",
+    title: "one post",
+    userId: "23",
+    body: "hadk d kajdbhaksdb dasdhad",
+    tags: "one two three",
+    reactions: {
+      likes: 345,
+    },
+  },
+  {
+    id: "2",
+    title: "two post",
+    userId: "26",
+    body: "hadk d kajdbhaksdb dasdhad",
+    tags: "one two three",
+    reactions: {
+      likes: 35,
+    },
+  },
+];
+*/
 
-export default PostListProvider;
+export default ContextProviderWrapper;

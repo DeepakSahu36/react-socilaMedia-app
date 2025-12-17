@@ -1,61 +1,45 @@
 import { useContext, useRef } from "react";
-import { PostListContext } from "../store/post-list-store";
+import { ProvidesContext } from "../store/post-list-store";
+import { useNavigate } from "react-router-dom";
+
+//import { Form } from "react-router-dom";
 
 function CreatePost() {
-  const { addPost } = useContext(PostListContext);
+  const { addPost } = useContext(ProvidesContext);
+   const navigate = useNavigate()
+  const userId = useRef("");
+  const title = useRef("");
+  const content = useRef("");
+   const reactions  = useRef("")
+  const tags = useRef("");
 
-  const userIdElement = useRef("");
-  const postTitleElement = useRef("");
-  const postBodyElement = useRef("");
-  const reactionsElement = useRef("");
-  const tagsElement = useRef("");
-
-  function handleAddClick(event) {
-    event.preventDefault();
-    
-    const userId = userIdElement.current.value;
-    const posttitle = postTitleElement.current.value;
-    const postBody = postBodyElement.current.value;
-    const reactions = reactionsElement.current.value;
-    const tags = tagsElement.current.value.split(" ");
+  const handleSubmit = function(event){
   
-    fetch("https://dummyjson.com/posts/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: posttitle,
-        body: postBody,
-        reactions: {
-          likes: reactions,
-        },
-        userId: userId,
-        tags: tags,
-      }),
-    })
-      .then((res) => res.json())
-      .then((resObj)=> addPost(resObj))
-      .catch(error =>{
-        console.log(error)
-      })
-         
-    
-    userIdElement.current.value = "";
-    postTitleElement.current.value = "";
-    postBodyElement.current.value = "";
-    tagsElement.current.value = "";
-    reactionsElement.current.value = "";
+    event.preventDefault()
+  addPost({
+    userId : userId.current.value,
+    title :title.current.value,
+    body : content.current.value,
+    tags : tags.current.value,
+    reactions : reactions.current.value
 
-    
+  })
+  userId.current.value = ""
+  title.current.value = ""
+  content.current.value = ""
+  tags.current.value = ""
+  reactions.current.value = ""
+  navigate("/")
   }
   return (
-    <form className="create-post">
+    <form className="create-post" onSubmit={handleSubmit}>
       <div className="mb-3">
         <label htmlFor="userId" className="form-label">
           Enter your UserId
         </label>
         <input
           type="text"
-          ref={userIdElement}
+          ref={userId}
           className="form-control"
           id="userId"
           placeholder="Your user id"
@@ -67,7 +51,7 @@ function CreatePost() {
         </label>
         <input
           type="text"
-          ref={postTitleElement}
+          ref={title}
           className="form-control"
           id="title"
           placeholder="How are you feeling today."
@@ -80,7 +64,7 @@ function CreatePost() {
         </label>
         <textarea
           className="form-control"
-          ref={postBodyElement}
+          ref={content}
           id="body"
           rows={4}
           placeholder="Tell us about it"
@@ -93,7 +77,7 @@ function CreatePost() {
         </label>
         <input
           type="text"
-          ref={tagsElement}
+          ref={tags}
           className="form-control"
           id="tags"
           placeholder="Please enter your tags here with space"
@@ -106,18 +90,13 @@ function CreatePost() {
         </label>
         <input
           type="text"
-          ref={reactionsElement}
           className="form-control"
+          ref={reactions}
           id="reactions"
           placeholder="How many people reacted to this post"
         />
       </div>
-
-      <button
-        type="submit"
-        className="btn btn-primary post-btn"
-        onClick={handleAddClick}
-      >
+      <button type="submit" className="btn btn-primary post-btn">
         Post
       </button>
     </form>

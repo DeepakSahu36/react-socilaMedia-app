@@ -1,11 +1,11 @@
+import { NavLink } from "react-router-dom";
 
-
-function Sidebar({setSelectTab,activeTab}) {
+function Sidebar() {
 
   return (
     <div className="d-flex flex-column flex-shrink-0 p-3 text-bg-dark sidebar">
       <a
-        href="/"
+   
         className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none"
       >
         <svg className="bi pe-none me-2" width="40" height="32" aria-hidden="true">
@@ -18,21 +18,21 @@ function Sidebar({setSelectTab,activeTab}) {
 
       <ul className="nav nav-pills flex-column mb-auto" >
         <li className="nav-item" >
-          <a href="#" className={`nav-link text-white ${activeTab === "Home" ? "active" : null}`} aria-current="page" onClick={()=>setSelectTab("Home")}>
+          <NavLink to="" className="nav-link text-white" aria-current="page">
             <svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true">
               <use xlinkHref="#home" />
             </svg>
             Home
-          </a>
+          </NavLink>
         </li>
 
         <li >
-          <a href="#" className={`nav-link text-white  ${activeTab === "Create Post" ? "active" :null}`} onClick={()=> setSelectTab("Create Post")}>
+          <NavLink to="create-post" className="nav-link text-white">
             <svg className="bi pe-none me-2" width="16" height="16" aria-hidden="true">
               <use xlinkHref="#speedometer2" />
             </svg>
             Create Post
-          </a>
+          </NavLink>
         </li>
       </ul>
 
@@ -40,7 +40,7 @@ function Sidebar({setSelectTab,activeTab}) {
         <hr />
 
         <a
-          href="#"
+         
           className="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
           data-bs-toggle="dropdown"
           aria-expanded="false"
